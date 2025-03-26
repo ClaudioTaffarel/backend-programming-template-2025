@@ -16,6 +16,9 @@ module.exports = (app) => {
   // Get user detail
   route.get('/:id', usersController.getUser);
 
+  // get user by email
+  route.post('/get-by-email', usersController.getUserByEmail);
+
   // Update user
   route.put('/:id', usersController.updateUser);
 
@@ -24,4 +27,8 @@ module.exports = (app) => {
 
   // Delete user
   route.delete('/:id', usersController.deleteUser);
+
+  // buat pake parammm
+  route.get('/', usersController.getUsers);
+
 };

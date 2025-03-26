@@ -6,6 +6,7 @@ const pinoHTTP = require('pino-http');
 const config = require('./config');
 const logger = require('./logger')('app');
 const routes = require('../api/routes');
+const authenticationRoute = require('../api/components/authentication/authentication-route');
 const { errorResponder, errorTypes } = require('./errors');
 
 const app = express();
@@ -28,6 +29,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Log HTTP requests with Pino
 app.use(pinoHTTP({ logger }));
+
+// Register authentication routes
+authenticationRoute(app); // Register the authentication route
 
 // API routes
 app.use(`${config.api.prefix}`, routes());

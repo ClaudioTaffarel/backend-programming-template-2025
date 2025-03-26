@@ -4,13 +4,24 @@ const { hashPassword } = require('../../../utils/password');
 
 async function getUsers(request, response, next) {
   try {
-    const users = await usersService.getUsers();
+    const offset = parseInt(request.query.offset) || 0;
+    const limit = parseInt(request.query.limit) || 10;
+
+    if (offset < 0 || limit <= 0) {
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'Offset must be >= 0 and limit must be > 0'
+      );
+    }
+
+    const users = await usersService.getUsers(offset, limit);
 
     return response.status(200).json(users);
   } catch (error) {
     return next(error);
   }
 }
+
 
 async function getUser(request, response, next) {
   try {
@@ -191,6 +202,26 @@ async function deleteUser(request, response, next) {
   }
 }
 
+async function getUserByEmail(request, response, next) {
+  try {
+    const { email } = request.body;
+
+    if (!email) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
+    }
+
+    const user = await usersService.getUserByEmail(email);
+
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
+    }
+
+    return response.status(200).json(user);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -198,4 +229,5 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
+  getUserByEmail
 };
